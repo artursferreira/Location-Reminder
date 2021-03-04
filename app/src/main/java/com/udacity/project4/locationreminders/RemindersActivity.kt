@@ -1,14 +1,13 @@
 package com.udacity.project4.locationreminders
 
-import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.NavHostFragment
 import com.udacity.project4.R
+import com.udacity.project4.utils.isLocationPermissionGranted
+import com.udacity.project4.utils.requestLocationPermission
 import kotlinx.android.synthetic.main.activity_reminders.*
 
 /**
@@ -16,9 +15,14 @@ import kotlinx.android.synthetic.main.activity_reminders.*
  */
 class RemindersActivity : AppCompatActivity() {
 
+    private val REQUEST_LOCATION_PERMISSION = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reminders)
+
+     //   if(!isLocationPermissionGranted())
+     //       requestLocationPermission(REQUEST_LOCATION_PERMISSION)
 
     }
 
@@ -30,5 +34,19 @@ class RemindersActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onRequestPermissionsResult(
+            requestCode: Int,
+            permissions: Array<String>,
+            grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // Check if location permissions are granted and if so enable the
+        // location data layer.
+        if (requestCode == REQUEST_LOCATION_PERMISSION) {
+            if (grantResults.size > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+
+            }
+        }
     }
 }
