@@ -42,9 +42,15 @@ Explain what each test does and why
 
 ```
 1.androidTest
-        //TODO: Students explain their testing here.
+        - RemindersDaoTest: tests every method from RemindersDao
+        - RemindersLocalRepositoryTest: tests every method from RemindersLocalRepository
+        - ReminderListFragmentTest: tests ReminderListFragment displaying data, displaying no data and navigation
+        - RemindersActivityTest: tests activity showing no data and does an end-to-end test (creating a new reminder, selecting a location, saving the reminder and displaying in the UI)
+
 2. test
-        //TODO: Students explain their testing here.
+       - RemindersListViewModelTest: tests RemindersListViewModel by fetching reminders, showing loading and showing error
+       - SaveReminderViewModelTest: tests SaveReminderViewModel by saving reminder, showing errors, clearing livedatas and showing a toast
+
 ```
 
 ## Project Instructions
