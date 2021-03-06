@@ -29,6 +29,18 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/reminder_title_detail"
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_small"
+            android:text="@{reminderDataItem.title}"
+            app:layout_constraintBottom_toBottomOf="@+id/reminder_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/reminder_title"
+            tools:text="reminder title" />
+
+        <TextView
             android:id="@+id/reminder_description"
             style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="wrap_content"
@@ -37,6 +49,18 @@
             android:text="@string/reminder"
             app:layout_constraintStart_toStartOf="@+id/reminder_title"
             app:layout_constraintTop_toBottomOf="@+id/reminder_title" />
+
+        <TextView
+            android:id="@+id/reminder_description_detail"
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_small"
+            android:text="@{reminderDataItem.description}"
+            app:layout_constraintBottom_toBottomOf="@+id/reminder_description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/reminder_description"
+            tools:text="example" />
 
         <TextView
             android:id="@+id/reminder_location"
@@ -49,35 +73,14 @@
             app:layout_constraintTop_toBottomOf="@+id/reminder_description" />
 
         <TextView
-            android:id="@+id/reminder_title_detail"
-            style="@style/TextAppearance.MaterialComponents.Body1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_small"
-            android:text="@{reminderDataItem.title}"
-            app:layout_constraintBottom_toBottomOf="@+id/reminder_title"
-            app:layout_constraintStart_toEndOf="@+id/reminder_title"
-            tools:text="reminder title" />
-
-        <TextView
-            android:id="@+id/reminder_description_detail"
-            style="@style/TextAppearance.MaterialComponents.Body1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_small"
-            android:text="@{reminderDataItem.description}"
-            app:layout_constraintBottom_toBottomOf="@+id/reminder_description"
-            app:layout_constraintStart_toEndOf="@+id/reminder_description"
-            tools:text="example" />
-
-        <TextView
             android:id="@+id/reminder_location_detail"
             style="@style/TextAppearance.MaterialComponents.Body1"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_small"
             android:text="@{reminderDataItem.location}"
             app:layout_constraintBottom_toBottomOf="@+id/reminder_location"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/reminder_location"
             app:layout_constraintTop_toTopOf="@+id/reminder_location"
             tools:text="Park" />
@@ -85,7 +88,7 @@
         <Button
             android:id="@+id/button_close"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
             android:layout_margin="@dimen/margin_normal"
             android:background="@color/colorAccent"
             android:textColor="@color/white"

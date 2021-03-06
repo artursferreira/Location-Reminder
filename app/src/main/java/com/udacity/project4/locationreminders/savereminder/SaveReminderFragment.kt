@@ -40,11 +40,11 @@ class SaveReminderFragment : BaseFragment() {
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         binding =
-                DataBindingUtil.inflate(inflater, R.layout.fragment_save_reminder, container, false)
+            DataBindingUtil.inflate(inflater, R.layout.fragment_save_reminder, container, false)
 
         setDisplayHomeAsUpEnabled(true)
 
@@ -60,7 +60,7 @@ class SaveReminderFragment : BaseFragment() {
         binding.selectLocation.setOnClickListener {
             //            Navigate to another fragment to get the user location
             _viewModel.navigationCommand.value =
-                    NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
+                NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
         }
 
         binding.saveReminder.setOnClickListener {
@@ -70,7 +70,13 @@ class SaveReminderFragment : BaseFragment() {
             val latitude = _viewModel.latitude.value
             val longitude = _viewModel.longitude.value
 
-            val reminder = ReminderDataItem(title = title, description = description, location = location, latitude = latitude, longitude = longitude)
+            val reminder = ReminderDataItem(
+                title = title,
+                description = description,
+                location = location,
+                latitude = latitude,
+                longitude = longitude
+            )
 
             _viewModel.validateAndSaveReminder(reminder)
             addGeofence(reminder)
@@ -80,27 +86,28 @@ class SaveReminderFragment : BaseFragment() {
 
     @SuppressLint("MissingPermission")
     private fun addGeofence(reminder: ReminderDataItem) {
-        val geofence = Geofence.Builder()
-            .setRequestId(reminder.id)
-            .setCircularRegion(reminder.latitude!!, reminder.longitude!!, GEOFENCE_RADIUS_IN_METERS)
-            .setExpirationDuration(Geofence.NEVER_EXPIRE)
-            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-            .build()
+        if (reminder.latitude != null && reminder.longitude != null) {
+            val geofence = Geofence.Builder()
+                .setRequestId(reminder.id)
+                .setCircularRegion(reminder.latitude!!, reminder.longitude!!, GEOFENCE_RADIUS_IN_METERS)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                .build()
 
-        val geofencingRequest = GeofencingRequest.Builder()
-            .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
-            .addGeofence(geofence)
-            .build()
+            val geofencingRequest = GeofencingRequest.Builder()
+                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER or GeofencingRequest.INITIAL_TRIGGER_EXIT)
+                .addGeofence(geofence)
+                .build()
 
-        //Permissions were already accepted at this point
-        geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent).run {
-            addOnSuccessListener {
-                Log.e("Add Geofence", geofence.requestId)
-            }
-            addOnFailureListener {
-
-                if ((it.message != null)) {
-                    Log.w(TAG, it.message.toString())
+            //Permissions were already accepted at this point
+            geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent).run {
+                addOnSuccessListener {
+                    Log.e("Add Geofence", geofence.requestId)
+                }
+                addOnFailureListener {
+                    if ((it.message != null)) {
+                        Log.w(TAG, it.message.toString())
+                    }
                 }
             }
         }
@@ -114,7 +121,7 @@ class SaveReminderFragment : BaseFragment() {
 
     companion object {
         const val ACTION_GEOFENCE_EVENT = "ACTION_GEOFENCE_EVENT"
-        const val GEOFENCE_RADIUS_IN_METERS = 100f
+        const val GEOFENCE_RADIUS_IN_METERS = 500f
         const val TAG = "SaveReminderFragment"
     }
 }
