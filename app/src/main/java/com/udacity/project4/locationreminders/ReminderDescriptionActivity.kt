@@ -43,4 +43,10 @@ class ReminderDescriptionActivity : AppCompatActivity() {
             finish()
         }
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        startActivity(Intent(this, RemindersActivity::class.java))
+        finish()
+    }
 }

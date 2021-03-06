@@ -2,15 +2,12 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.content.IntentSender
-import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
@@ -20,10 +17,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PointOfInterest
+import com.google.android.gms.maps.model.*
 import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
@@ -31,6 +25,7 @@ import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
+import com.udacity.project4.utils.wrapEspressoIdlingResource
 import org.koin.android.ext.android.inject
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
@@ -41,21 +36,22 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private var selectedPoi: PointOfInterest? = null
 
     private val runningQOrLater =
-            android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
+        android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
 
-    private val requestMultiplePermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-        permissions.entries.forEach {
-            Log.e("DEBUG", "${it.key} = ${it.value}")
+    private val requestMultiplePermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            permissions.entries.forEach {
+                Log.e("DEBUG", "${it.key} = ${it.value}")
+            }
+            if (permissions.all { it.value })
+                checkDeviceLocationSettingsAndStartGeofence()
         }
-        if (permissions.all { it.value })
-            checkDeviceLocationSettingsAndStartGeofence()
-    }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding =
-                DataBindingUtil.inflate(inflater, R.layout.fragment_select_location, container, false)
+            DataBindingUtil.inflate(inflater, R.layout.fragment_select_location, container, false)
 
         binding.viewModel = _viewModel
         binding.lifecycleOwner = this
@@ -63,7 +59,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
 
-        val mapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
+        val mapFragment =
+            childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
 
         mapFragment.getMapAsync(this)
 
@@ -129,6 +126,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             setMapStyle(this)
             zoomToUser()
             setPoiClick(this)
+            setMapClick(this)
         }
     }
 
@@ -138,10 +136,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             // Customize the styling of the base map using a JSON object defined
             // in a raw resource file.
             val success = map.setMapStyle(
-                    MapStyleOptions.loadRawResourceStyle(
-                            context,
-                            R.raw.map_style
-                    )
+                MapStyleOptions.loadRawResourceStyle(
+                    context,
+                    R.raw.map_style
+                )
             )
 
             if (!success) {
@@ -154,12 +152,17 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     @SuppressLint("MissingPermission")
     private fun zoomToUser() {
-        val location = LocationServices.getFusedLocationProviderClient(requireContext()).lastLocation
+        val location =
+            LocationServices.getFusedLocationProviderClient(requireContext()).lastLocation
         location.addOnCompleteListener {
-            val latlng = LatLng(it.result?.latitude!!, it.result?.longitude!!)
-            map.moveCamera(CameraUpdateFactory
-                    .newLatLngZoom(latlng, 17f))
-            map.addMarker(MarkerOptions().position(latlng))
+            it.result?.let { location ->
+                val latlng = LatLng(location.latitude, location.longitude)
+                map.moveCamera(
+                    CameraUpdateFactory
+                        .newLatLngZoom(latlng, 18f)
+                )
+                map.addMarker(MarkerOptions().position(latlng))
+            }
         }
     }
 
@@ -167,11 +170,28 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         map.setOnPoiClickListener { poi ->
             map.clear()
             val poiMarker = map.addMarker(
-                    MarkerOptions()
-                            .position(poi.latLng)
-                            .title(poi.name)
+                MarkerOptions()
+                    .position(poi.latLng)
+                    .title(poi.name)
             )
             poiMarker.showInfoWindow()
+            selectedPoi = poi
+        }
+    }
+
+    private fun setMapClick(map: GoogleMap) {
+        map.setOnMapLongClickListener { latLng ->
+            map.clear()
+
+            val poiMarker = map.addMarker(
+                MarkerOptions()
+                    .position(latLng)
+                    .title("Selected location")
+            )
+            poiMarker.showInfoWindow()
+
+            val poi = PointOfInterest(latLng, "0", "Selected location")
+
             selectedPoi = poi
         }
     }
@@ -188,7 +208,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         val settingsClient = LocationServices.getSettingsClient(requireActivity())
         val locationSettingsResponseTask =
-                settingsClient.checkLocationSettings(builder.build())
+            settingsClient.checkLocationSettings(builder.build())
 
         locationSettingsResponseTask.addOnFailureListener { exception ->
             if (exception is ResolvableApiException && resolve) {
@@ -197,15 +217,17 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 try {
                     // Show the dialog by calling startResolutionForResult(),
                     // and check the result in onActivityResult().
-                    exception.startResolutionForResult(requireActivity(),
-                            REQUEST_TURN_DEVICE_LOCATION_ON)
+                    exception.startResolutionForResult(
+                        requireActivity(),
+                        REQUEST_TURN_DEVICE_LOCATION_ON
+                    )
                 } catch (sendEx: IntentSender.SendIntentException) {
                     Log.d(TAG, "Error geting location settings resolution: " + sendEx.message)
                 }
             } else {
                 Snackbar.make(
-                        requireView(),
-                        R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
+                    requireView(),
+                    R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
                 ).setAction(android.R.string.ok) {
                     checkDeviceLocationSettingsAndStartGeofence()
                 }.show()
