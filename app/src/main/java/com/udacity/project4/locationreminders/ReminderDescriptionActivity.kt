@@ -26,6 +26,7 @@ class ReminderDescriptionActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityReminderDescriptionBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(
@@ -37,5 +38,9 @@ class ReminderDescriptionActivity : AppCompatActivity() {
 
         binding.reminderDataItem = reminder
 
+        binding.buttonClose.setOnClickListener {
+            startActivity(Intent(this, RemindersActivity::class.java))
+            finish()
+        }
     }
 }
