@@ -97,7 +97,7 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun testNavigationToSaveReminderFragment() = runBlockingTest {
+    fun reminderListFrag_testNavigationToSaveReminderFragment() = runBlockingTest {
 
         val fragmentScenario =
             launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
@@ -117,7 +117,7 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun testDataDisplayed() = runBlocking {
+    fun reminderListFrag_testDataDisplayed() = runBlocking {
         repository.saveReminder(reminder)
 
         val fragmentScenario =
@@ -132,7 +132,7 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun testNoDataDisplayed() {
+    fun reminderListFrag_testNoDataDisplayed() {
         val fragmentScenario =
             launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
         dataBindingIdlingResource.monitorFragment(fragmentScenario)

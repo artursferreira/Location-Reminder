@@ -10,11 +10,9 @@ import com.udacity.project4.R
 import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.locationreminders.MainCoroutineRule
 import com.udacity.project4.locationreminders.data.FakeDataSource
-import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.getOrAwaitValue
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
-import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
-import junit.framework.Assert.assertEquals
+import org.junit.Assert.assertEquals
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -55,7 +53,7 @@ class SaveReminderViewModelTest {
     }
 
     @Test
-    fun saveReminder_check_loading() = mainCoroutineRule.runBlockingTest {
+    fun saveReminder_ShowLoading() = mainCoroutineRule.runBlockingTest {
         mainCoroutineRule.pauseDispatcher()
         saveReminderViewModel.saveReminder(reminder)
         assertThat(saveReminderViewModel.showLoading.value).isTrue()
@@ -83,7 +81,7 @@ class SaveReminderViewModelTest {
     }
 
     @Test
-    fun testOnClear() = mainCoroutineRule.runBlockingTest {
+    fun saveReminder_OnClear() = mainCoroutineRule.runBlockingTest {
         mainCoroutineRule.pauseDispatcher()
         saveReminderViewModel.onClear()
         mainCoroutineRule.resumeDispatcher()
@@ -96,7 +94,7 @@ class SaveReminderViewModelTest {
     }
 
     @Test
-    fun validateEnteredData_nullTitle_shouldReturnError() = mainCoroutineRule.runBlockingTest {
+    fun validateData_showErrorNoTitle() = mainCoroutineRule.runBlockingTest {
         reminder.title = null
         saveReminderViewModel.validateEnteredData(reminder)
         assertEquals(
@@ -106,7 +104,7 @@ class SaveReminderViewModelTest {
     }
 
     @Test
-    fun validateEnteredData_nullLocation_shouldReturnError() = mainCoroutineRule.runBlockingTest {
+    fun validateData_showErrorNoLocation() = mainCoroutineRule.runBlockingTest {
         reminder.location = null
         saveReminderViewModel.validateEnteredData(reminder)
         assertEquals(
@@ -116,7 +114,7 @@ class SaveReminderViewModelTest {
     }
 
     @Test
-    fun shouldReturnErrorValidateAndSaveReminder() = mainCoroutineRule.runBlockingTest {
+    fun validateAndSaveReminder_showErrorNoTitle() = mainCoroutineRule.runBlockingTest {
         reminder.title = null
         mainCoroutineRule.pauseDispatcher()
         saveReminderViewModel.validateAndSaveReminder(reminder)

@@ -44,7 +44,7 @@ class RemindersListViewModelTest {
     }
 
     @Test
-    fun getRemindersList() {
+    fun remindersList_loadReminders() {
         reminderDataSource.reminders = reminderList
         remindersListViewModel.loadReminders()
         assertThat(remindersListViewModel.remindersList.getOrAwaitValue()).isNotEmpty()
@@ -52,7 +52,7 @@ class RemindersListViewModelTest {
     }
 
     @Test
-    fun checkLoading() {
+    fun remindersList_showLoading() {
         reminderDataSource.reminders = reminderList
         mainCoroutineRule.pauseDispatcher()
         remindersListViewModel.loadReminders()
@@ -60,7 +60,7 @@ class RemindersListViewModelTest {
     }
 
     @Test
-    fun returnError() {
+    fun remindersList_showError() {
         reminderDataSource.reminders = null
         remindersListViewModel.loadReminders()
         assertThat(remindersListViewModel.showSnackBar.getOrAwaitValue()).isEqualTo("Reminders not found")
