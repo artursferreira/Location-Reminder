@@ -34,6 +34,7 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.AutoCloseKoinTest
 import org.koin.test.get
+import java.lang.Thread.sleep
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -127,16 +128,21 @@ class RemindersActivityTest :
 
         //opens screen to select location
         onView(withId(R.id.selectLocation)).perform(click())
+
+        //small delay to make sure that the map was displayed
+        sleep(1000)
         onView(withId(R.id.mapFragment)).perform(longClick())
 
+        //small delay to make sure that a poi was selected
+        sleep(1000)
         onView(withId(R.id.saveButton)).perform(click())
 
+        //small delay to make sure that location was saved
+        sleep(1000)
         onView(withId(R.id.saveReminder)).perform(click())
 
-        //small delay to make sure that the list and views were
-        runBlocking {
-            delay(500)
-        }
+        //small delay to make sure that the list and views were displayed
+        sleep(1000)
 
         //returns to reminder list fragment and checks if saved reminder is visible
         onView(withId(R.id.noDataTextView)).check(matches(withEffectiveVisibility(Visibility.GONE)))
